@@ -1,3 +1,3 @@
-require './app/controllers/server'
+require './app/controllers/personal_site'
 
-run MyApp
+run PersonalSite
