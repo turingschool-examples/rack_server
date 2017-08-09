@@ -1,7 +1,7 @@
 require 'rack'
 
 class Server
-  def call(env)
+  def self.call(env)
     case env["PATH_INFO"]
     when "/" then index
     else
@@ -9,15 +9,15 @@ class Server
     end
   end
 
-  def index
+  def self.index
     ['200', {'Content-Type' => 'text/html'}, [render('index.html')]]
   end
 
-  def error
+  def self.error
     ['404', {'Content-Type' => 'text/html'}, ["<h1>Page not found.</h1>"]]
   end
 
-  def render(file)
+  def self.render(file)
     # File.read("./public/#{file}")
     "<h1>Welcome!</h1>"
   end
