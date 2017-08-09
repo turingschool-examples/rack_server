@@ -1,3 +1,3 @@
 require './app/controllers/server'
 
-Rack::Handler::WEBrick.run Server
+Rack::Handler::WEBrick.run MyApp

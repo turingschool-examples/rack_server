@@ -1,6 +1,6 @@
 require 'rack'
 
-class Server
+class MyApp
   def self.call(env)
     case env["PATH_INFO"]
     when "/" then index
@@ -18,8 +18,7 @@ class Server
   end
 
   def self.render(file)
-    # File.read("./public/#{file}")
-    "<h1>Welcome!</h1>"
+    File.read("./public/#{file}")
   end
 end
 
