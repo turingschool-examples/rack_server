@@ -18,7 +18,8 @@ class Server
   end
 
   def render(file)
-    File.read("./public/#{file}")
+    # File.read("./public/#{file}")
+    "<h1>Welcome!</h1>"
   end
 end
 
