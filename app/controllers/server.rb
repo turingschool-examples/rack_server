@@ -2,7 +2,23 @@ require 'rack'
 
 class Server
   def call(env)
-    ['200', {'Content-Type' => 'text/html'}, ["<h1>Meow You Have A barebones rack app.</h1><img src='http://i.telegraph.co.uk/multimedia/archive/02830/cat_2830677b.jpg'>"]]
+    case env["PATH_INFO"]
+    when "/" then index
+    else
+      error
+    end
+  end
+
+  def index
+    ['200', {'Content-Type' => 'text/html'}, [render('index.html')]]
+  end
+
+  def error
+    ['404', {'Content-Type' => 'text/html'}, ["<h1>Page not found.</h1>"]]
+  end
+
+  def render(file)
+    File.read("./public/#{file}")
   end
 end
 
