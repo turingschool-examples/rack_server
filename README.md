@@ -315,7 +315,7 @@ Go ahead and remove the `pry` from our test suite and run it one more time to ma
 
 #### Save and Open Page
 
-Oae last thing before we move on: remember that `launchy` gem that I mentioned briefly earlier? It allows us to see our page in the middle of a test. Update your test to include the command `save_and_open_page` before the assertions:
+One last thing before we move on: remember that `launchy` gem that I mentioned briefly earlier? It allows us to see our page in the middle of a test. Update your test to include the command `save_and_open_page` before the assertions:
 
 ```
 require './test/test_helper'
