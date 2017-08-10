@@ -1,5 +1,11 @@
 # Ruby on Light Rails
 
+The following tutorial is intended to introduce you to many of the topics we'll be covering in Module 2. It's not expected that you fully understand each and every topic, and entirely expected that this might be your first introduction to all of them. Try to soak it in. We'll be talking more about these topics throughout the module.
+
+Additionally, it is far more important at this point that you try to understand the big picture ideas of how the web works than the details of how we are implementing a server. Something like the HTTP request/response cycle with status codes, headers, verbs, and bodies will be used in any web app you build in Sinatra, Rails, Node, Django, or Pheonix, but we will be moving you into different app and testing frameworks even in the next few days. Use this as an opportunity to peak into what it is that a browser does when it sends a request, and what all information an app needs to prepare in its response.
+
+As always, if you have any questions or notice any issues, please feel free to reach out.
+
 ## Background
 
 Ruby on Rails and Sinatra are both frameworks that use the Ruby language to serve applications on the web. One of the things these two frameworks have in common is that they use [Rack](http://rack.github.io/) to interact with the web. While these are likely the two most popular Ruby web frameworks that use Rack, there are actually many more (e.g. [Padrino](http://padrinorb.com/), [Cuba](http://cuba.is/), [Hanami](http://hanamirb.org/), [Hobbit](https://github.com/patriciomacadden/hobbit), [Utopia](https://github.com/ioquatix/utopia), [Ramaze](http://ramaze.net/), [Camping](https://github.com/camping/camping), etc.).
