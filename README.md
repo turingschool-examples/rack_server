@@ -32,7 +32,15 @@ $ mkdir app/controllers
 $ touch app/controllers/personal_site.rb
 $ mkdir test
 $ touch test/test_helper.rb
+$ git init
+$ git status
+$ git add .
+$ git status
+$ git commit -m "Initial commit"
+$ git status
 ```
+
+From here on out be sure to commit as you finish adding pieces of functionality. I'm not going to tell you exactly when that is in this tutorial, so use your best judgment.
 
 ### Gemfile
 
@@ -51,7 +59,7 @@ gem "rack"
 
 A few of these will likely be new to you. You'll have plenty of time to familiarize yourself, but at a high level.
 
-* Capybara allows us to do test how our apps look in a web browser.
+* Capybara allows us to test how our apps look in a web browser.
 * Launchy allows us to stop in the middle of a test to see what is currently showing on our web page (using the command `save_and_open_page`).
 * Rack is the gem we're going to use to allow us to receive HTTP requests and send HTTP responses.
 
@@ -92,6 +100,8 @@ class CapybaraTestCase < Minitest::Test
   include Capybara::Minitest::Assertions
 end
 ```
+
+That `CapybaraTestCase` is pretty interesting. Our feature tests will inherit from it, and, since it inherits from `Minitest::Test`, will have access to both the Minitest methods that we know and love and the new Capybara methods that we'll be using to interact with our website.
 
 In this application, the Test Helper will be the way that our tests are made aware of our application. We do this by requiring `./app/controllers/personal_site`, and then setting a class called `PersonalSite` (which we haven't created yet) as the app that Capybara should look for when it's running our tests.
 
@@ -237,6 +247,8 @@ Let's do a little bit of exploration.
 
 ### What's Going on Here?
 
+#### Pry into Our App
+
 First, put a pry into the `::call` method in our PersonalSite class:
 
 ```ruby
@@ -261,6 +273,8 @@ It looks like there are quite a few key/value pairs in that `env` hash. Some of 
 * `"QUERY_STRING"`: tells us if a user sent us any additional information in the URL. Can be used to pass data from the client to our application.
 
 That's all interesting enough. Now let's pry into the test to see what we get there.
+
+#### Pry into Our Test
 
 Remove the pry from our PersonalSite class and add one to our test as follows:
 
@@ -299,9 +313,51 @@ If you want a full list of methods that you can call on page, you can run `page.
 
 Go ahead and remove the `pry` from our test suite and run it one more time to make sure we haven't broken anything.
 
+#### Save and Open Page
+
+Oae last thing before we move on: remember that `launchy` gem that I mentioned briefly earlier? It allows us to see our page in the middle of a test. Update your test to include the command `save_and_open_page` before the assertions:
+
+```
+require './test/test_helper'
+
+class HomepageTest < CapybaraTestCase
+  def test_user_can_see_the_homepage
+    visit '/'
+
+    save_and_open_page
+    assert page.has_content?("Welcome!")
+    assert_equal 200, page.status_code
+  end
+end
+```
+
+Re-run your test. Your browser of choice shoud open with `Welcome!` displayed. This isn't terribly helpful to us now, but it's immensely helpful if when you can't quite figure out what's happening on a website. Think of it like Pry for your browser.
+
+One minor annoyance: take a quick look at your project directory, and you'll see that there's a new file there that looks something like this:
+
+```
+capybara-20170810075006375354925.html
+```
+
+That's the page that `save_and_open_page` saved to your drive. And now it's polluting our project directory. It's served its purpose, so go ahead and delete it, but let's make a couple of changes so that we don't have to bother with this in the future.
+
+First, per the [Capybara docs](https://github.com/teamcapybara/capybara#debugging), we can change where these files are saved with a Capybara setting. Let's follow the pattern they've established and set that to `./tmp/capybara`. Add the following line to your `test_helper.rb` file below where you've set the Capybara app.
+
+```
+Capybara.save_path = './tmp/capybara'
+```
+
+Run your test again, and you should see the page open again, but now in your project directory there will be a new directory `tmp` with a subdirectory `capybara` holding the file that was just created. We don't want to bother with these files, and we don't want to push them to GitHub, so create a new `.gitignore` file in your project directory (if it doesn't already exist) and add the following line:
+
+```
+tmp/capybara
+```
+
+That should do it! Go ahead and remove the `save_and_open_page` line from your test so that we don't have that page popping up every time we run our tests.
+
 ## config.ru
 
-So we kind of have a site running. We definitely have something that passes our test, but we haven't actually seen it in a browser yet. We came here to make web pages! Let's make some web pages!
+So we kind of have a site running. We definitely have something that passes our test and we've even seen it in our browser, but only when we run our test. We haven't actually been able to just open up a web browser and see our page. We came here to make web pages! Let's make some web pages!
 
 Well... not so fast? We have to do a little bit of setup before we can see this in our browser.
 
