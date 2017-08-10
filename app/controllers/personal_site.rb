@@ -4,6 +4,7 @@ class PersonalSite
   def self.call(env)
     case env["PATH_INFO"]
     when "/" then index
+    when '/main.css' then css
     else
       error
     end
@@ -11,6 +12,10 @@ class PersonalSite
 
   def self.index
     ['200', {'Content-Type' => 'text/html'}, [render('index.html')]]
+  end
+
+  def self.css
+    ['200', {'Content-Type' => 'text/html'}, [render('main.css')]]
   end
 
   def self.error
