@@ -1,4 +1,4 @@
-# Ruby on Lightrails
+# Ruby on Light Rails
 
 ## Background
 
