@@ -3,7 +3,8 @@ require 'rack'
 class PersonalSite
   def self.call(env)
     case env["PATH_INFO"]
-    when "/" then index
+    when '/' then index
+    when '/about' then about
     when '/main.css' then css
     else
       error
@@ -11,19 +12,26 @@ class PersonalSite
   end
 
   def self.index
-    ['200', {'Content-Type' => 'text/html'}, [render('index.html')]]
+    render_view("index.html")
   end
 
-  def self.css
-    ['200', {'Content-Type' => 'text/html'}, [render('main.css')]]
+  def self.about
+    render_view("about.html")
   end
 
   def self.error
-    ['404', {'Content-Type' => 'text/html'}, ["<h1>Page not found.</h1>"]]
+    render_view("error.html", "404")
   end
 
-  def self.render(file)
-    File.read("./public/#{file}")
+  def self.render_view(page, code = '200')
+    [code, {'Content-Type' => 'text/html'}, [File.read("./app/views/#{page}")]]
+  end
+
+  def self.css
+    render_static('main.css')
+  end
+
+  def self.render_static(asset)
+    [200, {'Content-Type' => 'text/html'}, [File.read("./public/#{asset}")]]
   end
 end
-
