@@ -38,6 +38,8 @@ $ git add .
 $ git status
 $ git commit -m "Initial commit"
 $ git status
+$ hub create
+$ git push origin master
 ```
 
 From here on out be sure to commit as you finish adding pieces of functionality. I'm not going to tell you exactly when that is in this tutorial, so use your best judgment.
@@ -406,5 +408,280 @@ This is great! We have a super simple website that we're serving locally and see
 1) Additionally, we'd like to be able to add some styling to our page. Let's add links to CSS in the pages we've created and be sure that we can serve that up to our users.
 1) Can we deploy our site to the web so other people can see it? You bet we can.
 
+## File IO
 
+Wouldn't it be nice to be able to send a response that was a little longer (like a full HTML page) without clogging up our PersonalSite class? Let's create a `views` folder and put some HTML there so that we can do exactly that.
+
+```
+$ mkdir app/views
+$ touch app/views/index.html
+```
+
+Add the HTML below to your new `index.html` file.
+
+```html
+<html>
+  <head>
+    <title>Personal Site</title>
+  </head>
+  <body>
+    <h1>Welcome!</h1>
+  </body>
+</html>
+```
+
+And adjust your PersonalSite class to read from this file when preparing a response.
+
+```
+require 'rack'
+
+class PersonalSite
+  def self.call(env)
+    ['200', {'Content-Type' => 'text/html'}, [File.read('./app/views/index.html')]]
+  end
+end
+```
+
+Run your test to make sure you haven't broken anything (should be passing), and run `rackup` and visiti `localhost:9292` to see if your page still works. You should see something with just a smidge more styling since we've applied that H1 tag to our welcome.
+
+Done! We're serving static pages from our view folder! Great!
+
+## Serving Diffeent Pages
+
+Now, let's adjust our `::call` method to handle requests for different pages. The first thing that I want to do is generate an error if a user is visiting a page that doesn't exist. We're going to use the `PATH_INFO` stored in the `env` hash to determine where a user is trying to go.
+
+We could do this with an if/elsif/else block, or we could stack a bunch of return statements on top of one another, but it seems like this might be a good opportunity to practice a case statement. If you prefer either of the other options, feel free to use those.
+
+Try to see if you can write a test before you implement the code below. It should attempt to visit some page that does not exist and then assert that we get a 404 status code (indicating that the client has made an error), and that the page has some sort of message that indicating that the page doesn't exist.
+
+I'm also going to extract the different arrays that we could return into their own methods to help keep that `::call` method to a reasonable length.
+
+Before we start, let's create an error template in `app/views/error.html`
+
+```html
+<html>
+  <head>
+    <title>Personal Site</title>
+  </head>
+  <body>
+    <h1>Page not found.</h1>
+  </body>
+</html>
+```
+
+And update your PersonalSite class.
+
+```ruby
+require 'rack'
+
+class PersonalSite
+  def self.call(env)
+    case env["PATH_INFO"]
+    when '/' then index
+    else
+      error
+    end
+  end
+
+  def self.index
+    ['200', {'Content-Type' => 'text/html'}, [File.read('./app/views/index.html')]]
+  end
+
+  def self.error
+    ['404', {'Content-Type' => 'text/html'}, [File.read('./app/views/error.html')]]
+  end
+end
+```
+
+If we run our tests/run `rackup` we should be able to see that this is all working and we're not getting an error for any page where we haven't explicitly defined a route in our case statement.
+
+Great!
+
+Let's add one more branch so that we can display an `about` page. This will produce some repetition, so I'm going to refactor to pull those response arrays into their own method.
+
+```ruby
+require 'rack'
+
+class PersonalSite
+  def self.call(env)
+    case env["PATH_INFO"]
+    when '/' then index
+    when '/about' then about
+    else
+      error
+    end
+  end
+
+  def self.index
+    render_view('index.html')
+  end
+
+  def self.about
+    render_view('about.html')
+  end
+
+  def self.error
+    render_view('error.html', '404')
+  end
+
+  def self.render_view(page, code = '200')
+    [code, {'Content-Type' => 'text/html'}, [File.read("./app/views/#{page}")]]
+  end
+end
+```
+
+And create the `about.html` file in your `app/views` directory.
+
+```html
+<html>
+  <head>
+    <title>Personal Site</title>
+  </head>
+  <body>
+    <h1>About Me!</h1>
+    <p>Here's some stuff to know.</p>
+  </body>
+</html>
+```
+
+Run `rackup` and that seems to be working!
+
+One more thing before we move on: let's add a link to our home page to get to this About page.
+
+Our test for this will add some new Capybara methods.
+
+Create a new file in your `test/features` directory called `user_can_navigate_to_about_test.rb` and add the following:
+
+```ruby
+require './test/test_helper'
+
+class LinkTest < CapybaraTestCase
+  def test_user_can_see_the_homepage
+    visit '/'
+    click_on "About"
+
+    assert_equal 200, page.status_code
+    assert_equal '/about', current_path
+    assert page.has_content?("About Me!")
+  end
+end
+```
+
+* `#click_on` allows us to tell Capybara to click on a link or button.
+* `current_path` holds the value of the path that would show up in our browser navbar.
+
+See if you can make this test pass by adding a link to your `index.html` file. My solution is below.
+
+```html
+<html>
+  <head>
+    <title>Personal Site</title>
+  </head>
+  <body>
+    <h1>Welcome!</h1>
+    <a href="/about">About Me</a>
+  </body>
+</html>
+```
+
+Run the test, open the site up using `rackup` and see how you've done!
+
+## Styling
+
+This is all great, but our page is looking a little bit plain. Let's see if we can link up some basic styling. In order to do that, we're going to want to create a separate file to hold our CSS. I'm going to follow convention and create a separate directory to hold our CSS. This is also where we would put any JavaScript or image files that we might want to put into our site.
+
+```
+$ mkdir public
+$ touch public/main.css
+```
+
+Inside of that new `main.css` file, add the following:
+
+```css
+body {
+  background-color: blue;
+}
+```
+
+This will give us a quick way to see if our styling is linked up to our page.
+
+In our `app/views/index.html` file, add the following line inside of the `head` tags.
+
+```html
+<link rel="stylesheet" href="/main.css" title="CSS" type="text/css" />
+```
+
+If we visit the page at this point, we'll still see a site with a white background. What gives?
+
+We need to add the route to actually serve this static asset. In our PersonalSite class let's add a route for this new asset, and a supporting method to serve it up.
+
+```ruby
+require 'rack'
+
+class PersonalSite
+  def self.call(env)
+    case env["PATH_INFO"]
+    when '/' then index
+    when '/about' then about
+    when '/main.css' then css
+    else
+      error
+    end
+  end
+
+  # existing index/about/error/render_view methods
+
+  def self.css
+    render_static('main.css')
+  end
+
+  def self.render_static(asset)
+    [200, {'Content-Type' => 'text/html'}, [File.read("./public/#{asset}")]]
+  end
+end
+```
+
+Restart your server with `rackup`, visit `localhost:9292` and you should now see a page with a blue background! In order to see the same on your `about` page you'l need to add the same link tag that we added to `index`.
+
+## Deploying
+
+We're going to use Heroku to deploy our application. In order to do that, you're going to need to sign up for a Heroku account [here](https://signup.heroku.com/), and download the Command Line Interface by following the instructions [here](https://devcenter.heroku.com/articles/heroku-cli) under MacOS, and Getting Started.
+
+Be sure that you're in your site directory and run `$ heroku create`
+
+If you copy and paste the URI that commands returns (the `heroku.com` link, not the `.git` link), you should see a screen welcoming you to your new Heroku app.
+
+Great!
+
+That's not my application.
+
+That's o.k. One of the things that `$ heroku create` did in the background was add a second git remote (you can see this by running `$ git remote -v`). Now you can push to that remote using `$ git push heroku master`. When you run this command it will output a lot of information showing that your site is being uploaded and Heroku is starting it up.
+
+Visit the site again, and you should see your website in all its blue glory!
+
+How awesome is that!? Send it to all your friends and explain to them how cool it is.
+
+## Next Steps
+
+Add text and styling to your welcome/about me pages and create a page to hold a blog post that you write. Feel free to change the organization of the site as you see fit (Do you want more pages? Fewer? Up to you!). I'll also leave it up to you if you'd like to maintain your test suite or ditch it (just this once!).
+
+## Extensions
+
+* Those static assets are a little bit of a pain. Check to see if you can create a function to check to see if a file exists in `public` and if not display your error page. You can then call that at the end of your case statement in place of `error`.
+* What happens if we want to create a bunch of blog posts? Create a route in your case statement that includes a wild-card character such that if we visit `/blogs/1`, `/blogs/2`, `/blogs/3`, etc. we are directed to the appropriate blog post without having to create multiple routes.
+* Use the `tilt` gem and adjust your `::render` method to allow you to use the following template to remove some of the duplication in your views:
+
+```html
+<html>
+  <head>
+    <title>Personal Site</title>
+    <link rel="stylesheet" href="/main.css" title="CSS" type="text/css" />
+  </head>
+  <body>
+    <% yield %>
+  </body>
+</html>
+```
+
+The `yield` in the template above will yield to a block that's passed to it. It's actually part of Ruby that you might not have explored up to this point. See if you can find additional information about it online.
 
