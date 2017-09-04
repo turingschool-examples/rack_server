@@ -10,13 +10,13 @@ As always, if you have any questions or notice any issues, please feel free to r
 
 Ruby on Rails and Sinatra are both frameworks that use the Ruby language to serve applications on the web. One of the things these two frameworks have in common is that they use [Rack](http://rack.github.io/) to interact with the web. While these are likely the two most popular Ruby web frameworks that use Rack, there are actually many more (e.g. [Padrino](http://padrinorb.com/), [Cuba](http://cuba.is/), [Hanami](http://hanamirb.org/), [Hobbit](https://github.com/patriciomacadden/hobbit), [Utopia](https://github.com/ioquatix/utopia), [Ramaze](http://ramaze.net/), [Camping](https://github.com/camping/camping), etc.).
 
-A little bit of knowledge about the web and Ruby will get you surprisingly far in creating a Rack-based app. In order to test this theory out, let's go ahead and see if we can put something together, see it locally, and deploy it to the web.
+A little bit of knowledge about the web and Ruby will get you surprisingly far in creating a Rack-based app. In order to test this theory out, let's go ahead and see if we can put together a basic Rack app, see it locally, and deploy it to the web.
 
 ## But First... Testing!
 
-At this point, you've had an opportunity to test applications that you've built in the terminal without any concern for how someone would interact with them using a mouse. Today that changes. So, what do we want to test on a webpage? We want to make sure that when we visit a page we see the content we expect, when we click on a link it takes us where we expect, when we fill out a form and hit submit it creates a new record, and when we delete something it actually deletes from our database. Where do we get all of this? Feature testing with Capybara.
+At this point, you've had an opportunity to test applications that you've built in the terminal without any concern for how someone (e.g. a client) would interact with them using a mouse. Today that changes. So, what do we want to test on a webpage? We want to make sure that when we visit a page, **we see the content we expect**, when we click on a link, **it takes us where we expect**, when we fill out a form and hit submit, **it creates a new record**, and when we delete something, **it actually deletes from our database**. Where do we get all of this? Feature testing with Capybara (remember, feature tests are more client-oriented than unit or integration tests; they ensure that our *client-facing pages* are functioning correctly).
 
-We're going to do a little bit of testing setup before we start coding out our server. It's going to take us a while to build an operational failing test, let alone a passing one. Let's start by building some base directories and files.
+We're going to do a little bit of testing setup before we start coding out our server. It's going to take us a while to build an operational failing test, let alone a passing one. Let's start by creating some base directories and files.
 
 ### Setting Up
 
@@ -446,7 +446,7 @@ Run your test to make sure you haven't broken anything (should be passing). Then
 
 Done! We're serving static pages from our view folder! Great!
 
-### 2. Serving Diffeent Pages
+### 2. Serving Different Pages
 
 Now, let's adjust our `call` method to handle requests for different pages. The first thing that I want to do is generate an error if a user is visiting a page that doesn't exist. We're going to use the `PATH_INFO` stored in the `env` hash to determine where a user is trying to go.
 
