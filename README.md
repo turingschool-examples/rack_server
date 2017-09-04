@@ -145,7 +145,7 @@ It did.
 
 I think we're ready! Let's try.
 
-Let's make one more directory so that we can organize our test suite a little bit. We're totally going to write some feature tests (remember, these are more client-oriented tests that ensure our pages are functioning correctly).
+Let's make one more directory so that we can organize our test suite a little bit. We're totally going to write some feature tests.
 
 ```
 $ mkdir test/features
