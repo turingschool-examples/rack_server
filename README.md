@@ -2,7 +2,7 @@
 
 The following tutorial is intended to introduce you to many of the topics we'll be covering in Module 2. It's not expected that you fully understand each and every topic, and entirely expected that this might be your first introduction to all of them. Try to soak it in. We'll be talking more about these topics throughout the module.
 
-Additionally, in the coming weeks we'll be introducing you to tools to do some of the work we're asking of you in this tutorial. It is far more important at this point that you try to understand the big picture ideas of how the web works than the details of how we are implementing a server (which will change). Something like the HTTP request/response cycle with status codes, headers, verbs, and bodies will be used in any web app you build in Sinatra, Rails, Node, Django, or Pheonix, but we will be moving you into different app and testing frameworks even in the next few days. Use this as an opportunity to peek into what it is that a browser does when it sends a request, and what all information an app needs to prepare in its response.
+Additionally, in the coming weeks, we'll be introducing you to tools that will do some of the work we're asking you to do in this tutorial. The details of how we are implementing a server will change (we will be moving you into different app and testing frameworks in just a few days), but at this point, the important thing is to understand the big picture ideas of how the web works. The **HTTP request/response cycle with status codes, headers, verbs, and bodies** will be used in any web app you build in Sinatra, Rails, Node, Django, or Pheonix. Use this as an opportunity to peak into what the browser does when it sends a **request**, and the information an app needs to prepare in its **response**.
 
 As always, if you have any questions or notice any issues, please feel free to reach out.
 
@@ -14,13 +14,13 @@ A little bit of knowledge about the web and Ruby will get you surprisingly far i
 
 ## But First... Testing!
 
-At this point, you've had an opportunity to test applications that you've built in the terminal without any concern for how someone would interact with them using a mouse. Today that changes. So, what do we want to test on a webpage? We want to make sure that when we visit a page we see the content we expect, when we click on a link it takes us where we expect, when we fill out a form and hit submit it creates a new record, and when we delete something it actually deletes from our database. Where do we get all of this? Capybara.
+At this point, you've had an opportunity to test applications that you've built in the terminal without any concern for how someone would interact with them using a mouse. Today that changes. So, what do we want to test on a webpage? We want to make sure that when we visit a page we see the content we expect, when we click on a link it takes us where we expect, when we fill out a form and hit submit it creates a new record, and when we delete something it actually deletes from our database. Where do we get all of this? Feature testing with Capybara.
 
-We're going to do a little bit of testing setup before we start coding out our server. It's going to take us awhile to even have a failing test, let alone a passing one. Let's start by laying out some directories.
+We're going to do a little bit of testing setup before we start coding out our server. It's going to take us a while to build an operational failing test, let alone a passing one. Let's start by building some base directories and files.
 
 ### Setting Up
 
-In your Terminal, move to the directory where you'd like to store your application and enter the following:
+In your Terminal, move to the directory where you'd like to store your application (a directory in and of itself) and enter the following:
 
 ```
 $ mkdir personal_site
@@ -59,13 +59,13 @@ gem "launchy"
 gem "rack"
 ```
 
-A few of these will likely be new to you. You'll have plenty of time to familiarize yourself, but at a high level.
+A few of these will likely be new to you. You'll have plenty of time to familiarize yourself, but at a high level:
 
 * Capybara allows us to test how our apps look in a web browser.
 * Launchy allows us to stop in the middle of a test to see what is currently showing on our web page (using the command `save_and_open_page`).
 * Rack is the gem we're going to use to allow us to receive HTTP requests and send HTTP responses.
 
-Be sure to run `$ bundle` from the command line!
+Be sure to run `bundle` from the command line!
 
 ### Rakefile
 
@@ -103,9 +103,9 @@ class CapybaraTestCase < Minitest::Test
 end
 ```
 
-That `CapybaraTestCase` is pretty interesting. Our feature tests will inherit from it, and, since it inherits from `Minitest::Test`, will have access to both the Minitest methods that we know and love and the new Capybara methods that we'll be using to interact with our website.
+That `CapybaraTestCase` is pretty interesting. Since it inherits from `Minitest::Test`, our feature tests can inherit from it, and thus will have access to both the Minitest methods that we know and love and the new Capybara methods that we'll be using to interact with our website.
 
-In this application, the Test Helper will be the way that our tests are made aware of our application. We do this by requiring `./app/controllers/personal_site`, and then setting a class called `PersonalSite` (which we haven't created yet) as the app that Capybara should look for when it's running our tests.
+In this application, the Test Helper will be the way that our tests are made aware of our application. We do this by requiring `./app/controllers/personal_site`, and then setting `Capybara.app` to our rack app name `PersonalSite` (a class which we haven't created yet) so that Capybara knows where to look when it's running our tests.
 
 Note that I copied most of these lines almost directly from the [Capybara documentation](https://github.com/teamcapybara/capybara). In it, there is a [Setup](https://github.com/teamcapybara/capybara#setup) section that says the following:
 
@@ -143,9 +143,9 @@ It did.
 
 ## Can We Write a Test Already?
 
-I think so. Let's try.
+I think we're ready! Let's try.
 
-Let's make one more directory so that we can organize our test suite a little bit. We're totally going to write some feature tests.
+Let's make one more directory so that we can organize our test suite a little bit. We're totally going to write some feature tests (remember, these are more client-oriented tests that ensure our pages are functioning correctly).
 
 ```
 $ mkdir test/features
@@ -169,14 +169,14 @@ end
 
 What's all this about now? What does each line do?
 
-1) First we require our test helper so that we get access to minitest and all the Capybara goodness we added to it.
-1) Then we create a new class for our test (consistent with Minitest tests that we've written in the past), except now we inherit from CapybaraTestCase because we want to have access to all of those Capybara methods in our test (and because Capybara told us that's how we do it).
-1) Then we use one of the new methods that Capybara gives us `#visit` to go to the page at the root of our application (which... I know... still doesn't exist).
-1) Then we make some assertions: the first an `#assert` that will check to see that the argument evaluates to true, and the second an `#assert_equal` that will check the equality of `200` and the `page.status_code`
+1) `require './test/test_helper'` We require our test helper so that we get access to minitest and all the Capybara goodness we added to it.
+1) `class HomepageTest < CapybaraTestCase` We create a new class for our test (consistent with Minitest tests that we've written in the past), except now we inherit from CapybaraTestCase because we want to have access to all of those Capybara methods in our test (and because Capybara told us that's how we do it).
+1) `visit '/'` We use one of the new methods that Capybara gives us `#visit` to go to the page at the root of our application (which... I know... still doesn't exist).
+1) `assert page.has_content?("Welcome!"); assert_equal 200, page.status_code` We make some assertions: the first will check to see that the argument evaluates to true, and the second will check the equality of `200` and the `page.status_code`
 
 `page` here is also new, but basically that is Capybara's way of holding the response that we get back from our server. We'll talk more about it shortly.
 
-If we run this test, we should get an error saying something about an `uninitialized constant PersonalSite`. Even though we created the file and told this test about that file, we haven't actually created the class. Let's do that now.
+If we run this test (remember, we can do this using `rake`), we should get an error saying something about an `uninitialized constant PersonalSite`. Even though we created the file and told this test about that file, we haven't actually created the class. Let's do that now.
 
 ## Making Our Test Pass
 
@@ -217,7 +217,7 @@ The main piece that I pick out of this is that something `should be a rack app i
 
 Rack allows us to write web applications that receive HTTP requests from clients (e.g. web browsers), and send HTTP responses. There are just a few requirements for our application to play nicely with Rack.
 
-1) If we are going to create a class to hold our app, it must have a method `call` that takes an argument that we'll call `env`.
+1) The class that holds our app must have a method `call` that takes an argument that we'll call `env`.
 1) The `call` method must return an array with three components:
     1) An HTTP status code (a three digit number that tells a client if their request was successful, and if not provides some idea of why).
     1) HTTP headers (generally providing some information about the response).
@@ -238,7 +238,7 @@ require 'rack'
 
 class PersonalSite
   def self.call(env)
-    ['200', {'Content-Type' => 'text/html'}, ['Welcome!']]
+    ['200', {'Content-Type' => 'text/html'}, ['Welcome!']] # Recall, this array includes the HTTP response status code, HTTP response headers & HTTP body
   end
 end
 ```
@@ -333,7 +333,7 @@ class HomepageTest < CapybaraTestCase
 end
 ```
 
-Re-run your test. Your browser of choice shoud open with `Welcome!` displayed. This isn't terribly helpful to us now, but it's immensely helpful if when you can't quite figure out what's happening on a website. Think of it like Pry for your browser.
+Re-run your test. Your browser of choice shoud open with `Welcome!` displayed. This isn't terribly helpful to us now, but it's immensely helpful if when you can't quite figure out what's happening on a website. Think of it like Pry for your browser. Your test finished running in the background, so you can close this page whenever you've gotten the information you need.
 
 One minor annoyance: take a quick look at your project directory, and you'll see that there's a new file there that looks something like this:
 
@@ -361,7 +361,7 @@ That should do it! Go ahead and remove the `save_and_open_page` line from your t
 
 So we kind of have a site running. We definitely have something that passes our test and we've even seen it in our browser, but only when we run our test. We haven't actually been able to just open up a web browser and see our page. We came here to make web pages! Let's make some web pages!
 
-Well... not so fast? We have to do a little bit of setup before we can see this in our browser.
+Well... not so fast. We have to do a little bit of setup before we can see this in our browser.
 
 Create a `config.ru` file by running `touch config.ru`
 
@@ -375,7 +375,7 @@ require './app/controllers/personal_site'
 run PersonalSite
 ```
 
-Save that and run `$rackup` from your terminal. You should see your browser spin up and print something similar to this:
+Save that and run `rackup` from your terminal. You should see your browser spin up and print something similar to this:
 
 ```
 Puma starting in single mode...
@@ -386,9 +386,9 @@ Puma starting in single mode...
 Use Ctrl-C to stop
 ```
 
-You might have a different server (mine is Puma), and that might impact exactly what gets printed, but you should have something specifying a port number tacked onto `localhost`. Copy that (in my case `localhost:9292`), open up your browser, and pop it into the navbar. Once you hit return, you should see a page that says `Welcome!`
+You might have a different server (mine is Puma), and that might impact exactly what gets printed, but you should have something specifying a port number that may or may not be tacked onto `localhost` (in my case `localhost:9292`). In either case, open up your browser, and enter `localhost:<port-number>` (probably `localhost:9292`) into navbar. After you hit return, you should see a page that says `Welcome!`
 
-Website!
+You've got a website!
 
 Go back to the terminal window where your server is running and check out the new information that you see. Mine shows this:
 
@@ -399,18 +399,18 @@ Go back to the terminal window where your server is running and check out the ne
 
 It looks like two requests were made, both of them GET requests. The first for `/`, and the second for `/favicon.ico`, both of which returned 200 responses. What's that favicon request? Something that browsers send to get those little icons that show up on some sites when you open tabs. We haven't set one explicitly, but it seems like maybe Rack is doing us some more favors in the background.
 
-## Next Steps
+## Let's build it out a bit!
 
 This is great! We have a super simple website that we're serving locally and seeing in our browser. That in and of itself is super cool. What's next?
 
-1) Our response is currently hard coded into our app. Let's see if we can use what we know about File IO to create some HTML pages elsewhere serve them up as a response.
-1) Right now, `Welcome!` is the response to every request made to our server. Go ahead and try it. Visit `localhost:9292/blog` and see what happens. Still `Welcome!`. Let's figure out how to display different pages to our users based on the specific URI that they visit. It would also be nice to be able to link between the two of them.
+1) Our response is currently hard-coded into our app. Let's see if we can use what we know about File IO to create some HTML pages elsewhere serve them up as a response.
+1) Right now, `Welcome!` is the response to every request made to our server, no matter the path, parameters, or anchors (read more about what makes up a url here: [https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL)). Go ahead and try it. Visit `localhost:9292/blog` and see what happens. Still `Welcome!`. Let's figure out how to display different pages to our users based on the specific URI that they visit. It would also be nice to be able to link between the two of them.
 1) Additionally, we'd like to be able to add some styling to our page. Let's add links to CSS in the pages we've created and be sure that we can serve that up to our users.
 1) Can we deploy our site to the web so other people can see it? You bet we can.
 
-## File IO
+### 1. File IO
 
-Wouldn't it be nice to be able to send a response that was a little longer (like a full HTML page) without clogging up our PersonalSite class? Let's create a `views` folder and put some HTML there so that we can do exactly that.
+Wouldn't it be nice to be able to send a response that was a little longer (like a full HTML page) without clogging up our PersonalSite class? Let's shut down our server (`ctrl-c`), create a `views` folder, and put some HTML there so that we can do exactly that.
 
 ```
 $ mkdir app/views
@@ -430,9 +430,9 @@ Add the HTML below to your new `index.html` file.
 </html>
 ```
 
-And adjust your PersonalSite class to read from this file when preparing a response.
+And adjust your PersonalSite class to read from this file when preparing a response body.
 
-```
+```ruby
 require 'rack'
 
 class PersonalSite
@@ -442,19 +442,17 @@ class PersonalSite
 end
 ```
 
-Run your test to make sure you haven't broken anything (should be passing), and run `rackup` and visiti `localhost:9292` to see if your page still works. You should see something with just a smidge more styling since we've applied that H1 tag to our welcome.
+Run your test to make sure you haven't broken anything (should be passing). Then run `rackup` and visit `localhost:9292` to see if your page still works. You should see something with just a smidge more styling since we've applied that H1 tag to our welcome.
 
 Done! We're serving static pages from our view folder! Great!
 
-## Serving Diffeent Pages
+### 2. Serving Diffeent Pages
 
-Now, let's adjust our `::call` method to handle requests for different pages. The first thing that I want to do is generate an error if a user is visiting a page that doesn't exist. We're going to use the `PATH_INFO` stored in the `env` hash to determine where a user is trying to go.
+Now, let's adjust our `call` method to handle requests for different pages. The first thing that I want to do is generate an error if a user is visiting a page that doesn't exist. We're going to use the `PATH_INFO` stored in the `env` hash to determine where a user is trying to go.
 
 We could do this with an if/elsif/else block, or we could stack a bunch of return statements on top of one another, but it seems like this might be a good opportunity to practice a case statement. If you prefer either of the other options, feel free to use those.
 
-Try to see if you can write a test before you implement the code below. It should attempt to visit some page that does not exist and then assert that we get a 404 status code (indicating that the client has made an error), and that the page has some sort of message that indicating that the page doesn't exist.
-
-I'm also going to extract the different arrays that we could return into their own methods to help keep that `::call` method to a reasonable length.
+Try to see if you can write a test before you implement the code below. It should attempt to visit some page that does not exist, assert that we get a 404 status code (indicating that the client has made an error), and assert that the page has some sort of message indicating that the page doesn't exist.
 
 Before we start, let's create an error template in `app/views/error.html`
 
@@ -469,7 +467,7 @@ Before we start, let's create an error template in `app/views/error.html`
 </html>
 ```
 
-And update your PersonalSite class.
+And update your PersonalSite class. I'm also going to extract the different arrays that we could return into their own methods to help keep that `call` method to a reasonable length.
 
 ```ruby
 require 'rack'
@@ -493,11 +491,11 @@ class PersonalSite
 end
 ```
 
-If we run our tests/run `rackup` we should be able to see that this is all working and we're not getting an error for any page where we haven't explicitly defined a route in our case statement.
+If we run our tests, then run `rackup` we should be able to see that this is all working; we're not getting an error for any page where we have explicitly defined a route in our case statement and we get a 404 for the pages we haven't defined. (Note: you must shut down & restart your server since you've edited your application routes).
 
 Great!
 
-Let's add one more branch so that we can display an `about` page. This will produce some repetition, so I'm going to refactor to pull those response arrays into their own method.
+Let's add one more route so that we can display an `about` page. This will produce some repetition, so I'm going to refactor to pull those response arrays into their own method.
 
 ```ruby
 require 'rack'
@@ -586,7 +584,7 @@ See if you can make this test pass by adding a link to your `index.html` file. M
 
 Run the test, open the site up using `rackup` and see how you've done!
 
-## Styling
+### 3. Styling
 
 This is all great, but our page is looking a little bit plain. Let's see if we can link up some basic styling. In order to do that, we're going to want to create a separate file to hold our CSS. I'm going to follow convention and create a separate directory to hold our CSS. This is also where we would put any JavaScript or image files that we might want to put into our site.
 
@@ -605,13 +603,13 @@ body {
 
 This will give us a quick way to see if our styling is linked up to our page.
 
-In our `app/views/index.html` file, add the following line inside of the `head` tags.
+In our `app/views/index.html` file, add the following line inside of the `head` tags. The html `<head>` element is a container for metadata (data about data) & the The `<link>` element within it is used to link to external style sheets (read more about the `<head>` element here: https://www.w3schools.com/html/html_head.asp). These links are automatically executed as your page loads (the HTML document is downloaded first, then the browser parses the HTML in order, `head` first; the linked css sheet is downloaded and parsed before the body. Read more here: [https://stackoverflow.com/questions/1795438/load-and-execution-sequence-of-a-web-page](https://stackoverflow.com/questions/1795438/load-and-execution-sequence-of-a-web-page)).
 
 ```html
 <link rel="stylesheet" href="/main.css" title="CSS" type="text/css" />
 ```
 
-If we visit the page at this point, we'll still see a site with a white background. What gives?
+If we visit the page at this point, we still see a site with a white background. What gives?
 
 We need to add the route to actually serve this static asset. In our PersonalSite class let's add a route for this new asset, and a supporting method to serve it up.
 
@@ -641,21 +639,19 @@ class PersonalSite
 end
 ```
 
-Restart your server with `rackup`, visit `localhost:9292` and you should now see a page with a blue background! In order to see the same on your `about` page you'l need to add the same link tag that we added to `index`.
+Restart your server with `rackup`, visit `localhost:9292` and you should now see a page with a blue background! In order to see the same on your `about` page you'll need to add the same link tag to `about.html` as we added to `index.html`.
 
-## Deploying
+### 4. Deploying
 
-We're going to use Heroku to deploy our application. In order to do that, you're going to need to sign up for a Heroku account [here](https://signup.heroku.com/), and download the Command Line Interface by following the instructions [here](https://devcenter.heroku.com/articles/heroku-cli) under MacOS, and Getting Started.
+We're going to use Heroku to deploy our application. In order to do that, you're going to need to sign up for a Heroku account [here](https://signup.heroku.com/), download the Command Line Interface by following the MacOS instructions [here](https://devcenter.heroku.com/articles/heroku-cli#macos), and following the [Getting Started](https://devcenter.heroku.com/articles/heroku-cli#getting-started) instructions. Be sure that you're in your site directory when you run `heroku create`
 
-Be sure that you're in your site directory and run `$ heroku create`
-
-If you copy and paste the URI that commands returns (the `heroku.com` link, not the `.git` link), you should see a screen welcoming you to your new Heroku app.
+If you copy and paste the URI that is returned (the `heroku.com` link, not the `.git` link), you should see a screen welcoming you to your new Heroku app.
 
 Great!
 
-That's not my application.
+But that's not your application.
 
-That's o.k. One of the things that `$ heroku create` did in the background was add a second git remote (you can see this by running `$ git remote -v`). Now you can push to that remote using `$ git push heroku master`. When you run this command it will output a lot of information showing that your site is being uploaded and Heroku is starting it up.
+That's o.k. One of the things that `heroku create` did in the background was add a second git remote (you can see this by running `git remote -v`). Now you can push to that remote using `git push heroku master` (make sure you've added & committed your recent changes). When you run this command it will output a lot of information showing that your site is being uploaded and Heroku is starting it up.
 
 Visit the site again, and you should see your website in all its blue glory!
 
@@ -669,7 +665,7 @@ Add text and styling to your welcome/about me pages and create a page to hold a 
 
 * Those static assets are a little bit of a pain. Check to see if you can create a function to check to see if a file exists in `public` and if not display your error page. You can then call that at the end of your case statement in place of `error`.
 * What happens if we want to create a bunch of blog posts? Create a route in your case statement that includes a wild-card character such that if we visit `/blogs/1`, `/blogs/2`, `/blogs/3`, etc. we are directed to the appropriate blog post without having to create multiple routes.
-* Use the `tilt` gem and adjust your `::render` method to allow you to use the following template to remove some of the duplication in your views:
+* Use the `tilt` gem and adjust your `render_view` method to allow you to use the following template to remove some of the duplication in your views:
 
 ```html
 <html>
@@ -683,5 +679,5 @@ Add text and styling to your welcome/about me pages and create a page to hold a 
 </html>
 ```
 
-The `yield` in the template above will yield to a block that's passed to it. It's actually part of Ruby that you might not have explored up to this point. See if you can find additional information about it online.
+The `yield` in the template above will yield a block that's passed to it. It's actually part of Ruby that you might not have explored up to this point. See if you can find additional information about it online.
 
