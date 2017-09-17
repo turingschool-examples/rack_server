@@ -215,7 +215,21 @@ The main piece that I pick out of this is that something `should be a rack app i
 
 ### Overview
 
-Rack allows us to write web applications that receive HTTP requests from clients (e.g. web browsers), and send HTTP responses. There are just a few requirements for our application to play nicely with Rack.
+Rack allows us to write web applications that receive HTTP requests from clients (e.g. web browsers), and send HTTP responses. 
+
+### What is HTTP?
+
+HTTP is a protocol that we use to transfer information over the internet. 
+
+There are other protocols, however, this is the protocol we will use when serving our web pages with Rack, Sinatra and Rails.
+
+At a high level, this protocol prescribes the information and format that is necessary when sending a request from your browser to a server and a response from that server to your browser. 
+
+Read through section 3 on [this](https://www.httpwatch.com/httpgallery/introduction/) page for more detailed information about HTTP headers and status codes, which will be used in the tutorial below.
+
+### Getting Started with Rack
+
+There are just a few requirements for our application to play nicely with Rack.
 
 1) The class that holds our app must have a method `call` that takes an argument that we'll call `env`.
 1) The `call` method must return an array with three components:
