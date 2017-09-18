@@ -227,6 +227,8 @@ At a high level, this protocol prescribes the information and format that is nec
 
 Read through section 3 on [this](https://www.httpwatch.com/httpgallery/introduction/) page for more detailed information about HTTP headers and status codes, which will be used in the tutorial below.
 
+Watch [this](https://www.youtube.com/watch?v=18XDokfwIDo) video.
+
 ### Getting Started with Rack
 
 There are just a few requirements for our application to play nicely with Rack.
