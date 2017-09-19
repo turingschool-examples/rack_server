@@ -8,6 +8,84 @@ As always, if you have any questions or notice any issues, please feel free to r
 
 ## Background
 
+### HTTP
+
+HTTP is a protocol that we use to transfer information over the internet. There are other protocols, however, this is the protocol we will use when serving our web pages with Rack, Sinatra and Rails.
+
+At a high level, this protocol prescribes the information and format that is necessary when sending a **request** from your browser to a server and a **response** from that server to your browser.
+
+#### HTTP Requests
+
+One thing to note that might not already be apparent: when you click a link in your browser you are sending a request to a server. While we don't often see it, in the background that request is sent as a string.
+
+For example, when we enter `google.com` into our browser and hit return, it sends the following request:
+
+```
+GET / HTTP/1.1
+Host: google.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36
+Accept: */*
+
+```
+
+There are three parts to this request:
+
+* Request Line: the very first line in the request above.
+* Headers: key/value pairs that provide additional information to the server.
+* Body (optional): not included in the request above.
+
+The request line can be further broken down. It includes the following:
+
+| Part of the Request | Example Above | Description                                                                                  |
+|---------------------|---------------|----------------------------------------------------------------------------------------------|
+| HTTP Method         |      GET      | One of a predefined set of methods that developers use to route client requests.             |
+| Relative URL        |       /       | The portion of the URL after the `.com` identifying specific content a client is requesting. |
+| HTTP Version        |    HTTP/1.1   | The version of the HTTP protocol this request will use.                                      |
+
+After that first line, this particular requests includes three headers: key/value pairs that provide additional information to the server.
+
+#### HTTP Responses
+
+The response to the request included above looks like this:
+
+```
+HTTP/1.1 301 Moved Permanently
+Location: http://www.google.com/
+Content-Type: text/html; charset=UTF-8
+Date: Mon, 18 Sep 2017 09:41:17 GMT
+Expires: Wed, 18 Oct 2017 09:41:17 GMT
+Cache-Control: public, max-age=2592000
+Server: gws
+Content-Length: 219
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: SAMEORIGIN
+
+<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
+The document has moved
+<A HREF="http://www.google.com/">here</A>.
+</BODY></HTML>
+```
+
+Similar to the HTTP request, HTTP repsonses also have three parts:
+
+* Status Line: first line in the response.
+* Headers: key/value pairs providing additional information about the response.
+* Body: the portion of the response containing the information requested (frequently HTML, CSS, or JavaScript)
+
+The status line can further be divided into three parts:
+
+* The HTTP Version (consistent with the request)
+* An HTTP [status code](https://httpstatuses.com/): if you've ever seen a 404, that's a status code meaning that the requested information was not found.
+* A reason phrase corresponding to the status code providing a short description of that code (e.g. "Moved Permanently" in the example above)
+
+The primary task of developing applications for the web is accepting HTTP requests, determining what is being requested, and preparing a response. In the tutorial below, you'll take the HTTP request and, based on its relative URL, craft an HTTP response with a status code, headers, and a body.
+
+Read through section 3 on [this](https://www.httpwatch.com/httpgallery/introduction/) page for more detailed information about HTTP headers and status codes, which will be used in the tutorial below.
+
+### Ruby Web Frameworks
+
 Ruby on Rails and Sinatra are both frameworks that use the Ruby language to serve applications on the web. One of the things these two frameworks have in common is that they use [Rack](http://rack.github.io/) to interact with the web. While these are likely the two most popular Ruby web frameworks that use Rack, there are actually many more (e.g. [Padrino](http://padrinorb.com/), [Cuba](http://cuba.is/), [Hanami](http://hanamirb.org/), [Hobbit](https://github.com/patriciomacadden/hobbit), [Utopia](https://github.com/ioquatix/utopia), [Ramaze](http://ramaze.net/), [Camping](https://github.com/camping/camping), etc.).
 
 A little bit of knowledge about the web and Ruby will get you surprisingly far in creating a Rack-based app. In order to test this theory out, let's go ahead and see if we can put together a basic Rack app, see it locally, and deploy it to the web.
@@ -117,7 +195,6 @@ Capybara.app = MyRackApp
 
 And later, there is a section called [Using Capybara with Minitest](https://github.com/teamcapybara/capybara#using-capybara-with-minitest) which includes the following passage:
 
-
 > If you are not using Rails, define a base class for your Capybara tests like so:
 
 ```
@@ -215,17 +292,7 @@ The main piece that I pick out of this is that something `should be a rack app i
 
 ### Overview
 
-Rack allows us to write web applications that receive HTTP requests from clients (e.g. web browsers), and send HTTP responses. 
-
-### What is HTTP?
-
-HTTP is a protocol that we use to transfer information over the internet. 
-
-There are other protocols, however, this is the protocol we will use when serving our web pages with Rack, Sinatra and Rails.
-
-At a high level, this protocol prescribes the information and format that is necessary when sending a request from your browser to a server and a response from that server to your browser. 
-
-Read through section 3 on [this](https://www.httpwatch.com/httpgallery/introduction/) page for more detailed information about HTTP headers and status codes, which will be used in the tutorial below.
+Rack allows us to write web applications that receive HTTP requests from clients (e.g. web browsers), and send HTTP responses.
 
 Watch [this](https://www.youtube.com/watch?v=18XDokfwIDo) video.
 
