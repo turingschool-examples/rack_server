@@ -416,7 +416,7 @@ class HomepageTest < CapybaraTestCase
 end
 ```
 
-Re-run your test. Your browser of choice should open with `Welcome!` displayed. This isn't terribly helpful to us now, but it's immensely helpful if when you can't quite figure out what's happening on a website. Think of it like Pry for your browser. Your test finished running in the background, so you can close this page whenever you've gotten the information you need.
+Re-run your test. Your browser of choice should open with `Welcome!` displayed. This isn't terribly helpful to us now, but it's immensely helpful when you can't quite figure out what's happening on a website. Think of it like Pry for your browser. Your test finished running in the background, so you can close this page whenever you've gotten the information you need.
 
 One minor annoyance: take a quick look at your project directory, and you'll see that there's a new file there that looks something like this:
 
