@@ -486,7 +486,7 @@ It looks like two requests were made, both of them GET requests. The first for `
 
 This is great! We have a super simple website that we're serving locally and seeing in our browser. That in and of itself is super cool. What's next?
 
-1) Our response is currently hard-coded into our app. Let's see if we can use what we know about File IO to create some HTML pages elsewhere serve them up as a response.
+1) Our response is currently hard-coded into our app. Let's see if we can use what we know about File IO to create some HTML pages elsewhere and serve them up as a response.
 1) Right now, `Welcome!` is the response to every request made to our server, no matter the path, parameters, or anchors (read more about what makes up a url here: [https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL)). Go ahead and try it. Visit `localhost:9292/blog` and see what happens. Still `Welcome!`. Let's figure out how to display different pages to our users based on the specific URI that they visit. It would also be nice to be able to link between the two of them.
 1) Additionally, we'd like to be able to add some styling to our page. Let's add links to CSS in the pages we've created and be sure that we can serve that up to our users.
 1) Can we deploy our site to the web so other people can see it? You bet we can.
