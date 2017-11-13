@@ -757,7 +757,7 @@ Add text and styling to your welcome/about me pages and create a page to hold a 
     <link rel="stylesheet" href="/main.css" title="CSS" type="text/css" />
   </head>
   <body>
-    <% yield %>
+    <%= yield %>
   </body>
 </html>
 ```
