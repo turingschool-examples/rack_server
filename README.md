@@ -42,7 +42,7 @@ The request line can be further broken down. It includes the following:
 | Relative URL        |       /       | The portion of the URL after the `.com` identifying specific content a client is requesting. |
 | HTTP Version        |    HTTP/1.1   | The version of the HTTP protocol this request will use.                                      |
 
-After that first line, this particular requests includes three headers: key/value pairs that provide additional information to the server.
+After that first line, this particular request includes three headers: key/value pairs that provide additional information to the server.
 
 #### HTTP Responses
 
