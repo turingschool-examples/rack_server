@@ -8,3 +8,4 @@ class ErrorPageTest < CapybaraTestCase
     assert_equal 404, page.status_code
   end
 end
+t
