@@ -740,6 +740,22 @@ Visit the site again, and you should see your website in all its blue glory!
 
 How awesome is that!? Send it to all your friends and explain to them how cool it is.
 
+## Checks for Understanding
+
+1. What is HTTP?
+1. What is an HTTP Method (also known as an HTTP Verb)?
+1. What is an HTTP request?
+1. Describe the three parts of the HTTP request line.
+1. Describe the HTTP request headers.
+1. Describe the HTTP request body.
+1. What is an HTTP response? 
+1. Describe the three parts of the HTTP status line.
+1. Describe the HTTP response headers.
+1. Describe the HTTP response body.
+1. What is a Web Framework?
+1. What is a status code?
+1. What does it mean to deploy your application?
+
 ## Next Steps
 
 Add text and styling to your welcome/about me pages and create a page to hold a blog post that you write. Feel free to change the organization of the site as you see fit (Do you want more pages? Fewer? Up to you!). I'll also leave it up to you if you'd like to maintain your test suite or ditch it (just this once!).
