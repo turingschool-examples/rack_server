@@ -32,6 +32,6 @@ class PersonalSite
   end
 
   def self.render_static(asset)
-    [200, {'Content-Type' => 'text/html'}, [File.read("./public/#{asset}")]]
+    [200, {'Content-Type' => 'text/css'}, [File.read("./public/#{asset}")]]
   end
 end
